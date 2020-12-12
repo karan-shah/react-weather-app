@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { hot } from 'react-hot-loader';
 
 import HomePage from './pages/homepage'
@@ -7,12 +7,8 @@ import './styles/custom.css'
 
 function App() {
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(position => console.log({ position }))
-  }, [])
-
   return (
-    <div className="bg-dark">
+    <div>
       <HomePage />
     </div>
   );
