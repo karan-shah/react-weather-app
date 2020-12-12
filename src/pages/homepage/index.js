@@ -37,7 +37,7 @@ const HomePage = (props) => {
     }
   }
 
-  const getWeatherDataByCity = async (city, unit) => {
+  const getWeatherDataByCity = async (city, unit = currentUnit) => {
     const res = await fetchWeatherDataByCity(city, unit)
     if (res.name) {
       setCurrentWeatherData(res)
@@ -72,12 +72,12 @@ const HomePage = (props) => {
       </div>
       <div className='container justify-content-center'>
         <div className='mt-3'>
-          <PlacesSearchInput theme={theme} />
+          <PlacesSearchInput theme={theme} getWeatherDataByCity={getWeatherDataByCity} setCurrentCity={setCurrentCity} />
         </div>
         <div className='box mt-3'>
-          <h3>{currentCity.city}, {currentCity.principalSubdivision}, {currentCity.countryName}</h3>
+          <h3>{currentCity.city ? `${currentCity.city}, ${currentCity.principalSubdivision}, ${currentCity.countryName}` : currentCity.address}</h3>
           {
-            currentWeatherData.dt && <h5>{moment(new Date(currentWeatherData.dt * 1000)).format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
+            currentWeatherData.dt && <h5>{moment.unix(currentWeatherData.dt).utc().add(currentWeatherData.timezone, 's').format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
           }
           <div>
             {

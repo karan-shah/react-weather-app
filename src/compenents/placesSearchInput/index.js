@@ -20,10 +20,8 @@ const PlacesSearchInput = (props) => {
 
   const handleSelect = address => {
     console.log({ address })
-    // geocodeByAddress(address)
-    //   .then(results => getLatLng(results[0]))
-    //   .then(latLng => console.log('Success', latLng))
-    //   .catch(error => console.error('Error', error));
+    props.setCurrentCity({ address })
+    props.getWeatherDataByCity(address)
   };
 
   return (
@@ -37,7 +35,7 @@ const PlacesSearchInput = (props) => {
           <div>
             <input
               {...getInputProps({
-                placeholder: 'Search Places ...',
+                placeholder: 'Type city name to get weather forecast',
                 className: 'location-search-input',
               })}
             />
