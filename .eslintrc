@@ -9,8 +9,7 @@
     "plugin:react/recommended"
   ],
   "plugins": [
-    "react",
-    "prettier"
+    "react"
   ],
   "parser": "babel-eslint",
   "parserOptions": {
