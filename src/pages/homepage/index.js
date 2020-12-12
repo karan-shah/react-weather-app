@@ -8,7 +8,7 @@ import GlobalStyles from '../../globalStyles'
 import { lightTheme, darkTheme } from "../../theme"
 import ThemeToggler from '../../compenents/themeToggler'
 import PlacesSearchInput from '../../compenents/placesSearchInput'
-import NightSvg from '../../../assets/weather/night.svg'
+import NightSvg from '../../../public/assets/weather/night.svg'
 import apiInstance from '../../api'
 
 import './styles.css'
