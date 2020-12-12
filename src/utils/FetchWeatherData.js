@@ -1,24 +1,34 @@
 import apiInstance from '../api'
 
-const getWeatherDataByLatLng = (lat, lon, units = 'metric') => {
-  apiInstance.get('/weather', {
-    params: {
-      appid: process.env.REACT_APP_API_KEY,
-      lat,
-      lon,
-      units
-    }
-  }).then((data) => data.data).catch((error) => error)
+const fetchWeatherDataByLatLng = async (lat, lon, units = 'metric') => {
+  try {
+    const res = await apiInstance.get('/weather', {
+      params: {
+        appid: process.env.REACT_APP_API_KEY,
+        lat,
+        lon,
+        units
+      }
+    })
+    return res.data
+  } catch (e) {
+    return e
+  }
 }
 
-const getWeatherDataByCity = (city, units = 'metric') => {
-  apiInstance.get('/weather', {
-    params: {
-      appid: process.env.REACT_APP_API_KEY,
-      q: city,
-      units
-    }
-  }).then((data) => data.data).catch((error) => error)
+const fetchWeatherDataByCity = async (city, units = 'metric') => {
+  try {
+    const res = await apiInstance.get('/weather', {
+      params: {
+        appid: process.env.REACT_APP_API_KEY,
+        q: city,
+        units
+      }
+    })
+    return res.data
+  } catch (e) {
+    return e
+  }
 }
 
 const getWeatherDataUsingOneCallByLatLng = (lat, lon, units = 'metric') => {
@@ -42,4 +52,4 @@ const getWeatherDataUsingOneCallByCity = (city, units = 'metric') => {
   }).then((data) => data.data).catch((error) => error)
 }
 
-export { getWeatherDataByLatLng, getWeatherDataByCity, getWeatherDataUsingOneCallByLatLng, getWeatherDataUsingOneCallByCity }
+export { fetchWeatherDataByLatLng, fetchWeatherDataByCity, getWeatherDataUsingOneCallByLatLng, getWeatherDataUsingOneCallByCity }
