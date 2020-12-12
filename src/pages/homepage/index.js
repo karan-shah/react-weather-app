@@ -66,7 +66,7 @@ const HomePage = (props) => {
 
   return <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
     <GlobalStyles />
-    <div className='p-3'>
+    <div className='app-container p-3'>
       <div className='d-flex justify-content-end'>
         <ThemeToggler theme={theme} toggleTheme={themeToggler} />
       </div>
@@ -75,7 +75,7 @@ const HomePage = (props) => {
           <PlacesSearchInput theme={theme} />
         </div>
         <div className='box mt-3'>
-          <h2>{currentWeatherData.name}</h2>
+          <h3>{currentCity.city}, {currentCity.principalSubdivision}, {currentCity.countryName}</h3>
           {
             currentWeatherData.dt && <h5>{moment(new Date(currentWeatherData.dt * 1000)).format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
           }
