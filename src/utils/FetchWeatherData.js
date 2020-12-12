@@ -3,7 +3,7 @@ import apiInstance from '../api'
 const getWeatherDataByLatLng = (lat, lon, units = 'metric') => {
   apiInstance.get('/weather', {
     params: {
-      appid: process.env.API_KEY,
+      appid: process.env.REACT_APP_API_KEY,
       lat,
       lon,
       units
@@ -14,7 +14,7 @@ const getWeatherDataByLatLng = (lat, lon, units = 'metric') => {
 const getWeatherDataByCity = (city, units = 'metric') => {
   apiInstance.get('/weather', {
     params: {
-      appid: process.env.API_KEY,
+      appid: process.env.REACT_APP_API_KEY,
       q: city,
       units
     }
@@ -26,7 +26,7 @@ const getWeatherDataUsingOneCallByLatLng = (lat, lon, units = 'metric') => {
     params: {
       lat,
       lon,
-      appid: process.env.API_KEY,
+      appid: process.env.REACT_APP_API_KEY,
       units
     }
   }).then((data) => data.data).catch((error) => error)
@@ -35,7 +35,7 @@ const getWeatherDataUsingOneCallByLatLng = (lat, lon, units = 'metric') => {
 const getWeatherDataUsingOneCallByCity = (city, units = 'metric') => {
   apiInstance.get('/onecall', {
     params: {
-      appid: process.env.API_KEY,
+      appid: process.env.REACT_APP_API_KEY,
       q: city,
       units
     }

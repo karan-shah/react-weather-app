@@ -24,7 +24,7 @@ const PlacesSearchInput = (props) => {
 
   const libraries = ["places"];
   return (
-    <LoadScript googleMapsApiKey={process.env.GOOGLE_KEY} libraries={libraries}>
+    <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_KEY} libraries={libraries}>
       <PlacesAutocomplete
         value={address}
         onChange={handleChange}

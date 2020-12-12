@@ -24,7 +24,7 @@ const HomePage = (props) => {
       params: {
         lat: latitude,
         lon: longitude,
-        appid: process.env.API_KEY,
+        appid: process.env.REACT_APP_API_KEY,
         units: 'metric'
       }
     }).then((data) => setCurrentWeatherData(data.data)).catch((error) => error)
@@ -45,7 +45,7 @@ const HomePage = (props) => {
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
-      // getWeatherData(latitude, longitude)
+      getWeatherData(latitude, longitude)
     })
   }, [])
 
