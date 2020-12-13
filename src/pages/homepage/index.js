@@ -20,6 +20,7 @@ const apiInstance = axios.create({
 
 const HomePage = (props) => {
 
+  const [isLocationEnabled, setLocationPermissionValue] = useState()
   const [currentWeatherData, setCurrentWeatherData] = useState({})
   const [currentCity, setCurrentCity] = useState('')
   const [currentUnit, setCurrentUnit] = useState('metric')
@@ -58,57 +59,78 @@ const HomePage = (props) => {
   }
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(position => {
-      const { latitude, longitude } = position.coords
-      getCurrentCityNameByLatLng(latitude, longitude)
-    })
+    navigator.permissions.query({ name: 'geolocation' })
+      .then(res => {
+        setLocationPermissionValue(res.state === 'denied' ? false : true)
+        if (res.state !== 'denied') {
+          navigator.geolocation.getCurrentPosition(position => {
+            const { latitude, longitude } = position.coords
+            getCurrentCityNameByLatLng(latitude, longitude)
+          }, (error) => {
+            if (error.code === 1) {
+              setLocationPermissionValue(false)
+            }
+          })
+        }
+      })
   }, [])
 
-  return <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
-    <GlobalStyles />
-    <div className='app-container p-3'>
-      <div className='d-flex justify-content-end'>
-        <ThemeToggler theme={theme} toggleTheme={themeToggler} />
-      </div>
-      <div className='container justify-content-center'>
-        <div className='mt-3'>
-          <PlacesSearchInput theme={theme} getWeatherDataByCity={getWeatherDataByCity} setCurrentCity={setCurrentCity} />
+  if (isLocationEnabled) {
+    return <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+      <GlobalStyles />
+      <div className='app-container p-3'>
+        <div className='d-flex justify-content-end'>
+          <ThemeToggler theme={theme} toggleTheme={themeToggler} />
         </div>
-        <div className='box mt-3'>
-          <h3>{currentCity.city ? `${currentCity.city}, ${currentCity.principalSubdivision}, ${currentCity.countryName}` : currentCity.address}</h3>
-          {
-            currentWeatherData.dt && <h5>{moment.unix(currentWeatherData.dt).utc().add(currentWeatherData.timezone, 's').format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
-          }
-          <div>
-            {
-              currentWeatherData.name ? <Row className='justify-content-between'>
-                <Col md={10}>
-                  <Row className=''>
-                    <img src={NightSvg} />
-                    <div className='d-flex flex-row mt-3'>
-                      <h3>
-                        {convertTemp(currentWeatherData.main.temp) + '°'}
-                      </h3>
-                      <div className='d-flex flex-row'>
-                        <div className={`unitText px-2 ${currentUnit === 'metric' && 'active'}`} style={{ cursor: 'pointer' }} onClick={() => changeCurrentUnit('metric')}>C</div>
-                        <div> | </div>
-                        <div className={`unitText px-2 ${currentUnit === 'imperial' && 'active'}`} style={{ cursor: 'pointer' }} onClick={() => changeCurrentUnit('imperial')}>F</div>
-                      </div>
-                    </div>
-                  </Row>
-                </Col>
-                <Col>
-                  <div>Humidity: {currentWeatherData.main.humidity}%</div>
-                  <div>Wind: {currentWeatherData.wind.speed} {currentUnit === 'metric' ? 'mps' : 'mph'}</div>
-                  <div>Feels like: {convertTemp(currentWeatherData.main.feels_like)}°</div>
-                </Col>
-              </Row> : null
-            }
+        <div className='container justify-content-center'>
+          <div className='mt-3'>
+            <PlacesSearchInput theme={theme} getWeatherDataByCity={getWeatherDataByCity} setCurrentCity={setCurrentCity} />
           </div>
+          {
+            currentWeatherData.name ? <div className='box mt-3'>
+              <h3>{currentCity.city ? `${currentCity.city}, ${currentCity.principalSubdivision}, ${currentCity.countryName}` : currentCity.address}</h3>
+              {
+                currentWeatherData.dt && <h5>{moment.unix(currentWeatherData.dt).utc().add(currentWeatherData.timezone, 's').format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
+              }
+              <div>
+                {
+                  currentWeatherData.name ? <Row className='justify-content-between'>
+                    <Col md={10}>
+                      <Row className=''>
+                        <img src={NightSvg} />
+                        <div className='d-flex flex-row mt-3'>
+                          <h3>
+                            {convertTemp(currentWeatherData.main.temp) + '°'}
+                          </h3>
+                          <div className='d-flex flex-row'>
+                            <div className={`unitText px-2 ${currentUnit === 'metric' && 'active'}`} style={{ cursor: 'pointer' }} onClick={() => changeCurrentUnit('metric')}>C</div>
+                            <div> | </div>
+                            <div className={`unitText px-2 ${currentUnit === 'imperial' && 'active'}`} style={{ cursor: 'pointer' }} onClick={() => changeCurrentUnit('imperial')}>F</div>
+                          </div>
+                        </div>
+                      </Row>
+                    </Col>
+                    <Col>
+                      <div>Humidity: {currentWeatherData.main.humidity}%</div>
+                      <div>Wind: {currentWeatherData.wind.speed} {currentUnit === 'metric' ? 'mps' : 'mph'}</div>
+                      <div>Feels like: {convertTemp(currentWeatherData.main.feels_like)}°</div>
+                    </Col>
+                  </Row> : null
+                }
+              </div>
+            </div> : null
+          }
         </div>
       </div>
-    </div>
-  </ThemeProvider>
+    </ThemeProvider>
+  } else {
+    return <ThemeProvider theme={theme === 'light' ? lightTheme : darkTheme}>
+      <GlobalStyles />
+      <div className='app-container p-3 text-center'>
+        <h3>Please enable location permission</h3>
+      </div>
+    </ThemeProvider>
+  }
 }
 
 export default HomePage
