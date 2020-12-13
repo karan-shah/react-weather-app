@@ -19,10 +19,10 @@ const PlacesSearchInput = (props) => {
   };
 
   const handleSelect = address => {
-    console.log({ address })
     props.setCurrentCity({ address })
     props.getWeatherDataByCity(address)
   };
+  const searchOptions = { types: ['(cities)'] }
 
   return (
     <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_KEY} libraries={libraries}>
@@ -30,6 +30,7 @@ const PlacesSearchInput = (props) => {
         value={address}
         onChange={handleChange}
         onSelect={handleSelect}
+        searchOptions={searchOptions}
       >
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
           <div>

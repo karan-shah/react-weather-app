@@ -47,7 +47,7 @@ const HomePage = (props) => {
 
   const changeCurrentUnit = (unit) => {
     setCurrentUnit(unit)
-    getWeatherDataByCity(currentCity.city, unit)
+    getWeatherDataByCity(currentCity.city || currentCity.address, unit)
   }
 
   const convertTemp = (temp) => {
