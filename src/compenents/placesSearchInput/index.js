@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from 'reactstrap';
-import PlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-places-autocomplete';
+import PlacesAutocomplete from 'react-places-autocomplete';
 import { LoadScript } from '@react-google-maps/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -34,7 +34,7 @@ const PlacesSearchInput = (props) => {
       >
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
           <div>
-            <input
+            <Input
               {...getInputProps({
                 placeholder: 'Type city name to get weather forecast',
                 className: 'location-search-input',
@@ -44,13 +44,17 @@ const PlacesSearchInput = (props) => {
               {loading && <div>Loading...</div>}
               {suggestions.map((suggestion, index) => {
                 const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
-                const style = { backgroundColor: `${props.theme === 'dark' ? 'black' : 'white'}` };
+                const style = {
+                  backgroundColor: `${props.theme === 'dark' ? (`${suggestion.active ? 'rgba(248, 249, 250, 1)' : 'rgba(52, 58, 64, 1)'}`) : (`${suggestion.active ? 'rgba(52, 58, 64, 1)' : 'rgba(248, 249, 250, 1)'}`)}`,
+                  color: `${props.theme === 'dark' ? (`${suggestion.active ? 'black' : 'white'}`) : (`${suggestion.active ? 'white' : 'black'}`)}`
+                };
                 return (
                   <div key={index}
                     {...getSuggestionItemProps(suggestion, {
                       className,
                       style
-                    })}
+                    })
+                    }
                   >
                     <span>{suggestion.description}</span>
                   </div>

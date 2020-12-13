@@ -2,6 +2,12 @@
 //   position: absolute;
 //   left: 1rem;
 // }
-.search-city-input {
-  border-radius: 2rem;
+.location-search-input {
+  border-radius: 2rem !important;
+}
+.suggestion-item {
+  cursor: pointer;
+}
+.suggestion-item--active {
+  cursor: pointer;
 }
