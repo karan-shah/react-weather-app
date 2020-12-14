@@ -19,8 +19,7 @@ const PlacesSearchInput = (props) => {
   };
 
   const handleSelect = address => {
-    props.setCurrentCity({ address })
-    props.getWeatherDataByCity(address)
+    props.changeCurrentCity(address)
   };
   const searchOptions = { types: ['(cities)'] }
 
@@ -45,8 +44,8 @@ const PlacesSearchInput = (props) => {
               {suggestions.map((suggestion, index) => {
                 const className = suggestion.active ? 'suggestion-item--active' : 'suggestion-item';
                 const style = {
-                  backgroundColor: `${props.theme === 'dark' ? (`${suggestion.active ? 'rgba(248, 249, 250, 1)' : 'rgba(52, 58, 64, 1)'}`) : (`${suggestion.active ? 'rgba(52, 58, 64, 1)' : 'rgba(248, 249, 250, 1)'}`)}`,
-                  color: `${props.theme === 'dark' ? (`${suggestion.active ? 'black' : 'white'}`) : (`${suggestion.active ? 'white' : 'black'}`)}`
+                  backgroundColor: `${props.theme === 'dark' ? (`${suggestion.active ? lightTheme.background : darkTheme.background}`) : (`${suggestion.active ? darkTheme.background : lightTheme.background}`)}`,
+                  color: `${props.theme === 'dark' ? (`${suggestion.active ? lightTheme.text : darkTheme.text}`) : (`${suggestion.active ? darkTheme.text : lightTheme.text}`)}`
                 };
                 return (
                   <div key={index}
