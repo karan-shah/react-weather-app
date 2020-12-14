@@ -29,8 +29,8 @@ const HomePage = (props) => {
   const [currentCity, setCurrentCity] = useState('')
   const [currentWeatherData, setCurrentWeatherData] = useState({})
   const [currentCityTimezoneOffset, setCurrentCityTimezoneOffset] = useState()
-  const [currentCityHourlyWeatherData, setCurrentCityHourlyWeatherData] = useState()
-  const [currentCityDailyWeatherData, setCurrentCityDailyWeatherData] = useState()
+  const [currentCityHourlyWeatherData, setCurrentCityHourlyWeatherData] = useState([])
+  const [currentCityDailyWeatherData, setCurrentCityDailyWeatherData] = useState([])
   const [currentUnit, setCurrentUnit] = useState('metric')
   const [theme, setTheme] = useState('dark')
 
@@ -116,22 +116,24 @@ const HomePage = (props) => {
             <PlacesSearchInput theme={theme} changeCurrentCity={changeCurrentCity} />
           </div>
           {
-            currentWeatherData.temp ? <div className='box mt-3 text-white' style={{ backgroundImage: `url(${DayImage})` }}>
-              <h3>{currentCity}</h3>
-              {
-                currentWeatherData.dt && <h5>{moment.unix(currentWeatherData.dt).utc().add(currentCityTimezoneOffset, 's').format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
-              }
+            currentWeatherData.temp ? <div className='box p-0 mt-3 text-white weather-data-container' style={{ backgroundImage: `url(${DayImage})` }}>
+              <div className='p-3'>
+                <h3>{currentCity}</h3>
+                {
+                  currentWeatherData.dt && <h5 className='text-light'>{moment.unix(currentWeatherData.dt).utc().add(currentCityTimezoneOffset, 's').format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
+                }
+              </div>
               <div>
                 {
-                  currentWeatherData.temp ? <Row className='justify-content-between'>
+                  currentWeatherData.temp ? <Row className='m-0 justify-content-between'>
                     <Col md={10}>
-                      <Row className=''>
+                      <Row className='m-0'>
                         <img src={NightSvg} />
                         <div className='d-flex flex-row mt-3'>
-                          <h3>
+                          <h1>
                             {convertTemp(currentWeatherData.temp) + '°'}
-                          </h3>
-                          <div className='d-flex flex-row'>
+                          </h1>
+                          <div className='d-flex flex-row mt-1'>
                             <div className={`unitText px-2 ${currentUnit === 'metric' && 'active'}`} style={{ cursor: 'pointer' }} onClick={() => changeCurrentUnit('metric')}>C</div>
                             <div> | </div>
                             <div className={`unitText px-2 ${currentUnit === 'imperial' && 'active'}`} style={{ cursor: 'pointer' }} onClick={() => changeCurrentUnit('imperial')}>F</div>
@@ -140,12 +142,56 @@ const HomePage = (props) => {
                       </Row>
                     </Col>
                     <Col>
-                      <div>Humidity: {currentWeatherData.humidity}%</div>
-                      <div>Wind: {currentWeatherData.wind_speed} {currentUnit === 'metric' ? 'mps' : 'mph'}</div>
-                      <div>Feels like: {convertTemp(currentWeatherData.feels_like)}°</div>
+                      <div className='weather-details-text'>Humidity: {currentWeatherData.humidity}%</div>
+                      <div className='weather-details-text'>Wind: {currentWeatherData.wind_speed} {currentUnit === 'metric' ? 'mps' : 'mph'}</div>
+                      <div className='weather-details-text'>Feels like: {convertTemp(currentWeatherData.feels_like)}°</div>
                     </Col>
                   </Row> : null
                 }
+                <div className='mt-3'>
+                  {
+                    currentCityHourlyWeatherData.length ? <div className='todays-weather-forecast-container'>
+                      {
+                        currentCityHourlyWeatherData.filter(weatherData => moment.unix(weatherData.dt).utc().add(currentCityTimezoneOffset, 's')
+                          .isSame(moment.unix(currentWeatherData.dt).utc().add(currentCityTimezoneOffset, 's'), 'day')).map((todayWeatherData, index) => <div key={index} className='col today-weather-container'>
+                            <div>
+                              <img src={`http://openweathermap.org/img/wn/${todayWeatherData.weather[0].icon}@2x.png`} />
+                            </div>
+                            <div>
+                              {convertTemp(todayWeatherData.temp)}
+                            </div>
+                            <div>
+                              {moment.unix(todayWeatherData.dt).utc().add(currentCityTimezoneOffset, 's').format('hh:mm A')}
+                            </div>
+                          </div>)
+                      }
+                    </div> : null
+                  }
+                </div>
+                <div className='mt-3'>
+                  {
+                    currentCityDailyWeatherData.length ? <Row className='m-0'>
+                      {
+                        currentCityDailyWeatherData.map((weatherData, index) => <Col key={index} className='text-center'>
+                          <h5 className='mb-0'>{moment.unix(weatherData.dt).utc().add(currentCityTimezoneOffset, 's').format('ddd')}</h5>
+                          <div>
+                            <img src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`} />
+                          </div>
+                          <div>
+                            <div className='d-flex flex-row justify-content-center'>
+                              <div className='mr-3'>
+                                {convertTemp(weatherData.temp.max) + '°'}
+                              </div>
+                              <div>
+                                {convertTemp(weatherData.temp.min) + '°'}
+                              </div>
+                            </div>
+                          </div>
+                        </Col>)
+                      }
+                    </Row> : null
+                  }
+                </div>
               </div>
             </div> : null
           }

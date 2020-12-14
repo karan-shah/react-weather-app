@@ -19,6 +19,7 @@ const PlacesSearchInput = (props) => {
   };
 
   const handleSelect = address => {
+    setAddress(address);
     props.changeCurrentCity(address)
   };
   const searchOptions = { types: ['(cities)'] }

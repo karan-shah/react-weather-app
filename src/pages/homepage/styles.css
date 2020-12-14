@@ -1,6 +1,24 @@
 .app-container  {
     height: calc(100vh - 68px);
+    overflow-y: auto;
+}
+.weather-data-container {
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 .unitText.active {
     font-weight: bold;
+}
+.weather-details-text {
+    font-weight: 400;
+    letter-spacing: 1.5px;
+}
+.todays-weather-forecast-container {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+}
+.today-weather-container {
+    text-align: center;
+    width: 139px !important;
 }
