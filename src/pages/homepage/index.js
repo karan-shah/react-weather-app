@@ -8,46 +8,70 @@ import GlobalStyles from '../../globalStyles'
 import { lightTheme, darkTheme } from "../../theme"
 import ThemeToggler from '../../compenents/themeToggler'
 import PlacesSearchInput from '../../compenents/placesSearchInput'
+import { fetchWeatherDataUsingOneCall } from '../../utils/FetchWeatherData'
+import DayImage from '../../../public/assets/weather-backgrounds/clear-day.jpg'
 import NightSvg from '../../../public/assets/weather/night.svg'
-import { fetchWeatherDataByCity } from '../../utils/FetchWeatherData'
 
 import './styles.css'
 
 const apiInstance = axios.create({
-  baseURL: process.env.REACT_APP_BIGDATA_CLOUD_URL,
+  baseURL: process.env.REACT_APP_OPENCAGE_URL,
   timeout: 10000,
+  params: {
+    key: process.env.REACT_APP_OPENCAGE_KEY
+  }
 })
 
 const HomePage = (props) => {
 
   const [isLocationEnabled, setLocationPermissionValue] = useState()
-  const [currentWeatherData, setCurrentWeatherData] = useState({})
+  const [currentCityLatLng, setCurrentCityLatLng] = useState({})
   const [currentCity, setCurrentCity] = useState('')
+  const [currentWeatherData, setCurrentWeatherData] = useState({})
+  const [currentCityTimezoneOffset, setCurrentCityTimezoneOffset] = useState()
+  const [currentCityHourlyWeatherData, setCurrentCityHourlyWeatherData] = useState()
+  const [currentCityDailyWeatherData, setCurrentCityDailyWeatherData] = useState()
   const [currentUnit, setCurrentUnit] = useState('metric')
   const [theme, setTheme] = useState('dark')
 
   const getCurrentCityNameByLatLng = async (lat, lng) => {
     try {
-      const res = await apiInstance.get(`reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`)
-      if (res.data.city) {
-        setCurrentCity(res.data)
-        getWeatherDataByCity(res.data.city, currentUnit)
+      const res = await apiInstance.get(`json?q=${lat} ${lng}`)
+      if (res.status === 200) {
+        setCurrentCity(res.data.results[0].components)
+        getWeeklyWeatherData(lat, lng, currentUnit)
+      }
+    } catch (e) {
+      return e
+    }
+  }
+  const getCurrentCityLatLngByName = async (name) => {
+    try {
+      const res = await apiInstance.get(`json?q=${name}`)
+      if (res.status === 200) {
+        const data = res.data.results[0]
+        setCurrentCityLatLng(data.geometry)
+        setCurrentCity(data.components)
+        getWeeklyWeatherData(data.geometry.lat, data.geometry.lng)
       }
     } catch (e) {
       return e
     }
   }
 
-  const getWeatherDataByCity = async (city, unit = currentUnit) => {
-    const res = await fetchWeatherDataByCity(city, unit)
-    if (res.name) {
-      setCurrentWeatherData(res)
+  const getWeeklyWeatherData = async (lat, lng, unit = currentUnit) => {
+    const res = await fetchWeatherDataUsingOneCall(lat, lng, unit)
+    if (res.timezone_offset) {
+      setCurrentWeatherData(res.current)
+      setCurrentCityTimezoneOffset(res.timezone_offset)
+      setCurrentCityHourlyWeatherData(res.hourly)
+      setCurrentCityDailyWeatherData(res.daily)
     }
   }
 
   const changeCurrentUnit = (unit) => {
     setCurrentUnit(unit)
-    getWeatherDataByCity(currentCity.city || currentCity.address, unit)
+    getWeeklyWeatherData(currentCityLatLng.lat, currentCityLatLng.lng, unit)
   }
 
   const convertTemp = (temp) => {
@@ -58,6 +82,10 @@ const HomePage = (props) => {
     theme === 'light' ? setTheme('dark') : setTheme('light')
   }
 
+  const changeCurrentCity = (newCity) => {
+    getCurrentCityLatLngByName(newCity)
+  }
+
   useEffect(() => {
     navigator.permissions.query({ name: 'geolocation' })
       .then(res => {
@@ -65,6 +93,7 @@ const HomePage = (props) => {
         if (res.state !== 'denied') {
           navigator.geolocation.getCurrentPosition(position => {
             const { latitude, longitude } = position.coords
+            setCurrentCityLatLng({ lat: latitude, lng: longitude })
             getCurrentCityNameByLatLng(latitude, longitude)
           }, (error) => {
             if (error.code === 1) {
@@ -84,23 +113,23 @@ const HomePage = (props) => {
         </div>
         <div className='container justify-content-center'>
           <div className='mt-3'>
-            <PlacesSearchInput theme={theme} getWeatherDataByCity={getWeatherDataByCity} setCurrentCity={setCurrentCity} />
+            <PlacesSearchInput theme={theme} changeCurrentCity={changeCurrentCity} />
           </div>
           {
-            currentWeatherData.name ? <div className='box mt-3'>
-              <h3>{currentCity.city ? `${currentCity.city}, ${currentCity.principalSubdivision}, ${currentCity.countryName}` : currentCity.address}</h3>
+            currentWeatherData.temp ? <div className='box mt-3 text-white' style={{ backgroundImage: `url(${DayImage})` }}>
+              <h3>{currentCity.city ? `${currentCity.city}, ${currentCity.state}, ${currentCity.country}` : null}</h3>
               {
-                currentWeatherData.dt && <h5>{moment.unix(currentWeatherData.dt).utc().add(currentWeatherData.timezone, 's').format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
+                currentWeatherData.dt && <h5>{moment.unix(currentWeatherData.dt).utc().add(currentCityTimezoneOffset, 's').format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
               }
               <div>
                 {
-                  currentWeatherData.name ? <Row className='justify-content-between'>
+                  currentWeatherData.temp ? <Row className='justify-content-between'>
                     <Col md={10}>
                       <Row className=''>
                         <img src={NightSvg} />
                         <div className='d-flex flex-row mt-3'>
                           <h3>
-                            {convertTemp(currentWeatherData.main.temp) + '°'}
+                            {convertTemp(currentWeatherData.temp) + '°'}
                           </h3>
                           <div className='d-flex flex-row'>
                             <div className={`unitText px-2 ${currentUnit === 'metric' && 'active'}`} style={{ cursor: 'pointer' }} onClick={() => changeCurrentUnit('metric')}>C</div>
@@ -111,9 +140,9 @@ const HomePage = (props) => {
                       </Row>
                     </Col>
                     <Col>
-                      <div>Humidity: {currentWeatherData.main.humidity}%</div>
-                      <div>Wind: {currentWeatherData.wind.speed} {currentUnit === 'metric' ? 'mps' : 'mph'}</div>
-                      <div>Feels like: {convertTemp(currentWeatherData.main.feels_like)}°</div>
+                      <div>Humidity: {currentWeatherData.humidity}%</div>
+                      <div>Wind: {currentWeatherData.wind_speed} {currentUnit === 'metric' ? 'mps' : 'mph'}</div>
+                      <div>Feels like: {convertTemp(currentWeatherData.feels_like)}°</div>
                     </Col>
                   </Row> : null
                 }

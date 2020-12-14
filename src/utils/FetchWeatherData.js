@@ -31,25 +31,21 @@ const fetchWeatherDataByCity = async (city, units = 'metric') => {
   }
 }
 
-const getWeatherDataUsingOneCallByLatLng = (lat, lon, units = 'metric') => {
-  apiInstance.get('/onecall', {
-    params: {
-      lat,
-      lon,
-      appid: process.env.REACT_APP_API_KEY,
-      units
-    }
-  }).then((data) => data.data).catch((error) => error)
+const fetchWeatherDataUsingOneCall = async (lat, lon, units = 'metric') => {
+  try {
+    const res = await apiInstance.get('/onecall', {
+      params: {
+        lat,
+        lon,
+        exclude: 'minutely',
+        appid: process.env.REACT_APP_API_KEY,
+        units
+      }
+    })
+    return res.data
+  } catch (e) {
+    return e
+  }
 }
 
-const getWeatherDataUsingOneCallByCity = (city, units = 'metric') => {
-  apiInstance.get('/onecall', {
-    params: {
-      appid: process.env.REACT_APP_API_KEY,
-      q: city,
-      units
-    }
-  }).then((data) => data.data).catch((error) => error)
-}
-
-export { fetchWeatherDataByLatLng, fetchWeatherDataByCity, getWeatherDataUsingOneCallByLatLng, getWeatherDataUsingOneCallByCity }
+export { fetchWeatherDataByLatLng, fetchWeatherDataByCity, fetchWeatherDataUsingOneCall }
