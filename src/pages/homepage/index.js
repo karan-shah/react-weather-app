@@ -38,7 +38,7 @@ const HomePage = (props) => {
     try {
       const res = await apiInstance.get(`json?q=${lat} ${lng}`)
       if (res.status === 200) {
-        setCurrentCity(res.data.results[0].components)
+        setCurrentCity(res.data.results[0].formatted)
         getWeeklyWeatherData(lat, lng, currentUnit)
       }
     } catch (e) {
@@ -51,7 +51,7 @@ const HomePage = (props) => {
       if (res.status === 200) {
         const data = res.data.results[0]
         setCurrentCityLatLng(data.geometry)
-        setCurrentCity(data.components)
+        setCurrentCity(data.formatted)
         getWeeklyWeatherData(data.geometry.lat, data.geometry.lng)
       }
     } catch (e) {
@@ -117,7 +117,7 @@ const HomePage = (props) => {
           </div>
           {
             currentWeatherData.temp ? <div className='box mt-3 text-white' style={{ backgroundImage: `url(${DayImage})` }}>
-              <h3>{currentCity.city ? `${currentCity.city}, ${currentCity.state}, ${currentCity.country}` : null}</h3>
+              <h3>{currentCity}</h3>
               {
                 currentWeatherData.dt && <h5>{moment.unix(currentWeatherData.dt).utc().add(currentCityTimezoneOffset, 's').format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
               }
