@@ -119,9 +119,6 @@ const HomePage = (props) => {
             currentWeatherData.temp ? <div className='box p-0 mt-3 text-white weather-data-container'
               style={{ backgroundImage: `url(/assets/weather-backgrounds/${getWeatherBackground(currentWeatherData, currentCityTimezoneOffset)}.jpg)` }}
             >
-              {
-                console.log('currentWeatherData.temp- ', currentWeatherData.temp, currentCityTimezoneOffset)
-              }
               <div className='p-3'>
                 <h3>{currentCity}</h3>
                 {
@@ -135,14 +132,15 @@ const HomePage = (props) => {
                       <Row className='m-0'>
                         <div className='text-center'>
                           <img src={`/assets/weather/${getWeatherIcon(currentWeatherData, currentWeatherData.sunrise, currentWeatherData.sunset, currentCityTimezoneOffset)}.svg`} className='current-weather-svg' />
-                          <h5>{currentWeatherData.weather[0].description}</h5>
+                          <h5 className='text-capitalize'>{currentWeatherData.weather[0].description}</h5>
                         </div>
                         <div className='d-flex flex-row mt-3'>
-                          <div className='current-weather-text'>{convertTemp(currentWeatherData.temp) + '°'}</div>
-                          <div className='d-flex flex-row mt-4'>
-                            <div className={`unitText px-2 ${currentUnit === 'metric' ? 'active' : 'text-light'}`} onClick={() => changeCurrentUnit('metric')}>C</div>
+                          <div className='current-weather-text'>{convertTemp(currentWeatherData.temp)}</div>
+                          <div className='d-flex flex-row mt-3'>
+                            <div className='temp-degree'>°</div>
+                            <div className={`unitText px-2 ${currentUnit === 'metric' ? 'active' : 'text-light font-weight-100'}`} onClick={() => changeCurrentUnit('metric')}>C</div>
                             <div className='text-light'> | </div>
-                            <div className={`unitText px-2 ${currentUnit === 'imperial' ? 'active' : 'text-light'}`} onClick={() => changeCurrentUnit('imperial')}>F</div>
+                            <div className={`unitText px-2 ${currentUnit === 'imperial' ? 'active' : 'text-light font-weight-100'}`} onClick={() => changeCurrentUnit('imperial')}>F</div>
                           </div>
                         </div>
                       </Row>

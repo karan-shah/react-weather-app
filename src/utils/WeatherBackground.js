@@ -41,6 +41,8 @@ const getWeatherBackground = (weatherData, timezoneOffset) => {
       return `cloudy-${type}`
     } else if (weatherType === 'Clouds') {
       return `cloudy-${type}`
+    } else if (weatherType === 'Mist') {
+      return `cloudy-${type}`
     } else if (weatherType === 'Snow') {
       return `overcast-${type}`
     } else if (weatherType === 'Drizzle') {

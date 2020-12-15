@@ -40,6 +40,8 @@ const getWeatherIcon = (weatherData, sunrise, sunset, timezoneOffset) => {
       return `cloudy-${type}`
     } else if (weatherType === 'Clouds') {
       return `cloudy-${type}`
+    } else if (weatherType === 'Mist') {
+      return `cloudy-${type}`
     } else if (weatherType === 'Snow') {
       return `snow-${type}`
     } else if (weatherType === 'Drizzle') {
