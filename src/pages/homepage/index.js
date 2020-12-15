@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { Col, Row } from 'reactstrap'
-import moment from 'moment'
 import { ThemeProvider } from "styled-components";
 import axios from 'axios'
 
@@ -9,8 +8,9 @@ import { lightTheme, darkTheme } from "../../theme"
 import ThemeToggler from '../../compenents/themeToggler'
 import PlacesSearchInput from '../../compenents/placesSearchInput'
 import { fetchWeatherDataUsingOneCall } from '../../utils/FetchWeatherData'
-import DayImage from '../../../public/assets/weather-backgrounds/clear-day.jpg'
-import NightSvg from '../../../public/assets/weather/night.svg'
+import ConvertTime from '../../utils/ConvertTime'
+import getWeatherBackground from '../../utils/WeatherBackground'
+import getWeatherIcon from '../../utils/WeatherIcon'
 
 import './styles.css'
 
@@ -116,11 +116,13 @@ const HomePage = (props) => {
             <PlacesSearchInput theme={theme} changeCurrentCity={changeCurrentCity} />
           </div>
           {
-            currentWeatherData.temp ? <div className='box p-0 mt-3 text-white weather-data-container' style={{ backgroundImage: `url(${DayImage})` }}>
+            currentWeatherData.temp ? <div className='box p-0 mt-3 text-white weather-data-container'
+              style={{ backgroundImage: `url(/assets/weather-backgrounds/${getWeatherBackground(currentWeatherData, currentCityTimezoneOffset)}.jpg)` }}
+            >
               <div className='p-3'>
                 <h3>{currentCity}</h3>
                 {
-                  currentWeatherData.dt && <h5 className='text-light'>{moment.unix(currentWeatherData.dt).utc().add(currentCityTimezoneOffset, 's').format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
+                  currentWeatherData.dt && <h5 className='text-light'>{ConvertTime(currentWeatherData.dt, currentCityTimezoneOffset).format('dddd, MMMM DD, YYYY | hh:mm A')}</h5>
                 }
               </div>
               <div>
@@ -128,7 +130,7 @@ const HomePage = (props) => {
                   currentWeatherData.temp ? <Row className='m-0 justify-content-between'>
                     <Col md={10}>
                       <Row className='m-0'>
-                        <img src={NightSvg} />
+                        <img src={`/assets/weather/${getWeatherIcon(currentWeatherData, currentCityTimezoneOffset)}.svg`} />
                         <div className='d-flex flex-row mt-3'>
                           <h1>
                             {convertTemp(currentWeatherData.temp) + '°'}
@@ -152,16 +154,16 @@ const HomePage = (props) => {
                   {
                     currentCityHourlyWeatherData.length ? <div className='todays-weather-forecast-container'>
                       {
-                        currentCityHourlyWeatherData.filter(weatherData => moment.unix(weatherData.dt).utc().add(currentCityTimezoneOffset, 's')
-                          .isSame(moment.unix(currentWeatherData.dt).utc().add(currentCityTimezoneOffset, 's'), 'day')).map((todayWeatherData, index) => <div key={index} className='col today-weather-container'>
+                        currentCityHourlyWeatherData.filter(weatherData => ConvertTime(weatherData.dt, currentCityTimezoneOffset)
+                          .isSame(ConvertTime(currentWeatherData.dt, currentCityTimezoneOffset), 'day')).map((todayWeatherData, index) => <div key={index} className='col today-weather-container'>
                             <div>
-                              <img src={`http://openweathermap.org/img/wn/${todayWeatherData.weather[0].icon}@2x.png`} />
+                              <img src={`/assets/weather/${getWeatherIcon(todayWeatherData, currentCityTimezoneOffset)}.svg`} />
                             </div>
                             <div>
                               {convertTemp(todayWeatherData.temp)}
                             </div>
                             <div>
-                              {moment.unix(todayWeatherData.dt).utc().add(currentCityTimezoneOffset, 's').format('hh:mm A')}
+                              {ConvertTime(todayWeatherData.dt, currentCityTimezoneOffset).format('hh:mm A')}
                             </div>
                           </div>)
                       }
@@ -173,9 +175,9 @@ const HomePage = (props) => {
                     currentCityDailyWeatherData.length ? <Row className='m-0'>
                       {
                         currentCityDailyWeatherData.map((weatherData, index) => <Col key={index} className='text-center'>
-                          <h5 className='mb-0'>{moment.unix(weatherData.dt).utc().add(currentCityTimezoneOffset, 's').format('ddd')}</h5>
+                          <h5 className='mb-0'>{ConvertTime(weatherData.dt, currentCityTimezoneOffset).format('ddd')}</h5>
                           <div>
-                            <img src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`} />
+                            <img src={`/assets/weather/${getWeatherIcon(weatherData, currentCityTimezoneOffset)}.svg`} />
                           </div>
                           <div>
                             <div className='d-flex flex-row justify-content-center'>
