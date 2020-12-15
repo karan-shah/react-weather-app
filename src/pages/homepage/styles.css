@@ -6,8 +6,11 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+.unitText {
+    cursor: pointer;
+}
 .unitText.active {
-    font-weight: bold;
+    font-weight: 800;
 }
 .weather-details-text {
     font-weight: 400;
@@ -21,4 +24,11 @@
 .today-weather-container {
     text-align: center;
     width: 139px !important;
+}
+.current-weather-svg {
+    width: 8rem;
+}
+.current-weather-text {
+    font-size: 4rem;
+    font-weight: bold;
 }

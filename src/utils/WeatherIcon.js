@@ -23,34 +23,34 @@ const isDayNight = (sunriseTime, sunsetTime, currentTime) => {
   }
 }
 
-const getWeatherIcon = (weatherData, timezoneOffset) => {
+const getWeatherIcon = (weatherData, sunrise, sunset, timezoneOffset) => {
   const { weather } = weatherData
   const { main: weatherType } = weather[0]
-  const sunriseTime = ConvertTime(weatherData.sunrise, timezoneOffset)
-  const sunsetTime = ConvertTime(weatherData.sunset, timezoneOffset)
+  const sunriseTime = ConvertTime(sunrise, timezoneOffset)
+  const sunsetTime = ConvertTime(sunset, timezoneOffset)
   const currentTime = ConvertTime(weatherData.dt, timezoneOffset)
 
   const type = isDayNight(sunriseTime, sunsetTime, currentTime)
   if (weatherType) {
     if (weatherType === 'Clear') {
-      return type === 'day' ? 'day' : 'night'
+      return type
     } else if (weatherType === 'Rain') {
-      return 'rainy'
+      return `rain-${type}`
     } else if (weatherType === 'Atmosphere') {
       return `cloudy-${type}`
     } else if (weatherType === 'Clouds') {
       return `cloudy-${type}`
     } else if (weatherType === 'Snow') {
-      return 'snowy'
+      return `snow-${type}`
     } else if (weatherType === 'Drizzle') {
-      return 'rainy'
+      return `rain-${type}`
     } else if (weatherType === 'Thunderstorm') {
       return 'thunder'
     } else {
-      return type === 'day' ? 'day' : 'night'
+      return type
     }
   } else {
-    return type === 'day' ? 'day' : 'night'
+    return type
   }
 }
 

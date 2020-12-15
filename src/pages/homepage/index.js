@@ -61,7 +61,7 @@ const HomePage = (props) => {
 
   const getWeeklyWeatherData = async (lat, lng, unit = currentUnit) => {
     const res = await fetchWeatherDataUsingOneCall(lat, lng, unit)
-    if (res.timezone_offset) {
+    if (res.lat) {
       setCurrentWeatherData(res.current)
       setCurrentCityTimezoneOffset(res.timezone_offset)
       setCurrentCityHourlyWeatherData(res.hourly)
@@ -119,6 +119,9 @@ const HomePage = (props) => {
             currentWeatherData.temp ? <div className='box p-0 mt-3 text-white weather-data-container'
               style={{ backgroundImage: `url(/assets/weather-backgrounds/${getWeatherBackground(currentWeatherData, currentCityTimezoneOffset)}.jpg)` }}
             >
+              {
+                console.log('currentWeatherData.temp- ', currentWeatherData.temp, currentCityTimezoneOffset)
+              }
               <div className='p-3'>
                 <h3>{currentCity}</h3>
                 {
@@ -128,22 +131,23 @@ const HomePage = (props) => {
               <div>
                 {
                   currentWeatherData.temp ? <Row className='m-0 justify-content-between'>
-                    <Col md={10}>
+                    <Col md={9}>
                       <Row className='m-0'>
-                        <img src={`/assets/weather/${getWeatherIcon(currentWeatherData, currentCityTimezoneOffset)}.svg`} />
+                        <div className='text-center'>
+                          <img src={`/assets/weather/${getWeatherIcon(currentWeatherData, currentWeatherData.sunrise, currentWeatherData.sunset, currentCityTimezoneOffset)}.svg`} className='current-weather-svg' />
+                          <h5>{currentWeatherData.weather[0].description}</h5>
+                        </div>
                         <div className='d-flex flex-row mt-3'>
-                          <h1>
-                            {convertTemp(currentWeatherData.temp) + '°'}
-                          </h1>
-                          <div className='d-flex flex-row mt-1'>
-                            <div className={`unitText px-2 ${currentUnit === 'metric' && 'active'}`} style={{ cursor: 'pointer' }} onClick={() => changeCurrentUnit('metric')}>C</div>
-                            <div> | </div>
-                            <div className={`unitText px-2 ${currentUnit === 'imperial' && 'active'}`} style={{ cursor: 'pointer' }} onClick={() => changeCurrentUnit('imperial')}>F</div>
+                          <div className='current-weather-text'>{convertTemp(currentWeatherData.temp) + '°'}</div>
+                          <div className='d-flex flex-row mt-4'>
+                            <div className={`unitText px-2 ${currentUnit === 'metric' ? 'active' : 'text-light'}`} onClick={() => changeCurrentUnit('metric')}>C</div>
+                            <div className='text-light'> | </div>
+                            <div className={`unitText px-2 ${currentUnit === 'imperial' ? 'active' : 'text-light'}`} onClick={() => changeCurrentUnit('imperial')}>F</div>
                           </div>
                         </div>
                       </Row>
                     </Col>
-                    <Col>
+                    <Col className=''>
                       <div className='weather-details-text'>Humidity: {currentWeatherData.humidity}%</div>
                       <div className='weather-details-text'>Wind: {currentWeatherData.wind_speed} {currentUnit === 'metric' ? 'mps' : 'mph'}</div>
                       <div className='weather-details-text'>Feels like: {convertTemp(currentWeatherData.feels_like)}°</div>
@@ -157,7 +161,7 @@ const HomePage = (props) => {
                         currentCityHourlyWeatherData.filter(weatherData => ConvertTime(weatherData.dt, currentCityTimezoneOffset)
                           .isSame(ConvertTime(currentWeatherData.dt, currentCityTimezoneOffset), 'day')).map((todayWeatherData, index) => <div key={index} className='col today-weather-container'>
                             <div>
-                              <img src={`/assets/weather/${getWeatherIcon(todayWeatherData, currentCityTimezoneOffset)}.svg`} />
+                              <img src={`/assets/weather/${getWeatherIcon(todayWeatherData, currentWeatherData.sunrise, currentWeatherData.sunset, currentCityTimezoneOffset)}.svg`} />
                             </div>
                             <div>
                               {convertTemp(todayWeatherData.temp)}
@@ -177,7 +181,7 @@ const HomePage = (props) => {
                         currentCityDailyWeatherData.map((weatherData, index) => <Col key={index} className='text-center'>
                           <h5 className='mb-0'>{ConvertTime(weatherData.dt, currentCityTimezoneOffset).format('ddd')}</h5>
                           <div>
-                            <img src={`/assets/weather/${getWeatherIcon(weatherData, currentCityTimezoneOffset)}.svg`} />
+                            <img src={`/assets/weather/${getWeatherIcon(weatherData, currentWeatherData.sunrise, currentWeatherData.sunset, currentCityTimezoneOffset)}.svg`} />
                           </div>
                           <div>
                             <div className='d-flex flex-row justify-content-center'>
