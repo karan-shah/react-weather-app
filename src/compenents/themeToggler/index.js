@@ -1,5 +1,4 @@
 import React from 'react'
-import styled from "styled-components"
 import Toggle from 'react-toggle'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons'

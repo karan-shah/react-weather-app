@@ -5,6 +5,7 @@
 .weather-data-container {
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;
 }
 .unitText {
     cursor: pointer;

@@ -11,6 +11,7 @@ import { fetchWeatherDataUsingOneCall } from '../../utils/FetchWeatherData'
 import ConvertTime from '../../utils/ConvertTime'
 import getWeatherBackground from '../../utils/WeatherBackground'
 import getWeatherIcon from '../../utils/WeatherIcon'
+import DayOrNight from '../../utils/DayOrNight'
 
 import './styles.css'
 
@@ -32,7 +33,7 @@ const HomePage = (props) => {
   const [currentCityHourlyWeatherData, setCurrentCityHourlyWeatherData] = useState([])
   const [currentCityDailyWeatherData, setCurrentCityDailyWeatherData] = useState([])
   const [currentUnit, setCurrentUnit] = useState('metric')
-  const [theme, setTheme] = useState('dark')
+  const [theme, setTheme] = useState('')
 
   const getCurrentCityNameByLatLng = async (lat, lng) => {
     try {
@@ -59,9 +60,19 @@ const HomePage = (props) => {
     }
   }
 
+  const setCurrentThemeByWeatherData = (currentWeatherData, timezoneOffset) => {
+    const { sunrise, sunset, dt } = currentWeatherData
+    const sunriseTime = ConvertTime(sunrise, timezoneOffset)
+    const sunsetTime = ConvertTime(sunset, timezoneOffset)
+    const currentTime = ConvertTime(dt, timezoneOffset)
+    const dayOrNight = DayOrNight(sunriseTime, sunsetTime, currentTime)
+    setTheme(dayOrNight === 'day' ? 'light' : 'dark')
+  }
+
   const getWeeklyWeatherData = async (lat, lng, unit = currentUnit) => {
     const res = await fetchWeatherDataUsingOneCall(lat, lng, unit)
     if (res.lat) {
+      setCurrentThemeByWeatherData(res.current, res.timezone_offset)
       setCurrentWeatherData(res.current)
       setCurrentCityTimezoneOffset(res.timezone_offset)
       setCurrentCityHourlyWeatherData(res.hourly)
